@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Manager</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>
+          <a href="#" onclick="showHomePage(); return false;" class="logo-link"
+            >🍔 Recipe Manager</a
+          >
+        </h1>
+        <nav>
+          <a
+            href="#"
+            onclick="showAddEditPage(); return false;"
+            class="btn-primary"
+            >Add Recipe</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- HOME PAGE -->
+      <div id="homePage" class="page active">
+        <section class="search-filter-section">
+          <div class="search-filters-row">
+            <div class="search-box">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search recipes by title..."
+              />
+              <span class="search-icon">🔍</span>
+            </div>
+            <div class="filter-group">
+              <label for="difficultyFilter">Difficulty:</label>
+              <select id="difficultyFilter">
+                <option value="all">All</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="prepTimeFilter">Max Total Time:</label>
+              <select id="prepTimeFilter">
+                <option value="0">No limit</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+                <option value="90">90 min</option>
+                <option value="120">120 min</option>
+                <option value="180">180 min</option>
+              </select>
+            </div>
+          </div>
+        </section>
+        <section class="recipes-section">
+          <div id="recipeCount" class="recipe-count"></div>
+          <div id="recipesGrid" class="recipes-grid"></div>
+          <div id="noRecipes" class="no-recipes" style="display: none">
+            <p>
+              No recipes found.
+              <a href="#" onclick="showAddEditPage(); return false;"
+                >Add your first recipe!</a
+              >
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ADD/EDIT PAGE -->
+      <div id="addEditPage" class="page">
+        <div class="form-container">
+          <div class="form-header">
+            <a
+              href="#"
+              onclick="showHomePage(); return false;"
+              class="back-link"
+              >← Back</a
+            >
+            <h1 id="formTitle">Add New Recipe</h1>
+          </div>
+          <form id="recipeForm">
+            <div class="form-group">
+              <label for="title">Recipe Title *</label>
+              <input type="text" id="title" name="title" required />
+              <span class="error-message" id="titleError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description *</label>
+              <textarea
+                id="description"
+                name="description"
+                rows="3"
+                required
+              ></textarea>
+              <span class="error-message" id="descriptionError"></span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prepTime">Prep Time *</label>
+                <select id="prepTime" name="prepTime" required>
+                  <option value="">Select prep time</option>
+                  <option value="0">0 min</option>
+                  <option value="15">15 min</option>
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60">60 min</option>
+                  <option value="90">90 min</option>
+                  <option value="120">120 min</option>
+                  <option value="150">150 min</option>
+                  <option value="180">180 min</option>
+                </select>
+                <span class="error-message" id="prepTimeError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="cookTime">Cook Time *</label>
+                <select id="cookTime" name="cookTime" required>
+                  <option value="">Select cook time</option>
+                  <option value="0">0 min</option>
+                  <option value="15">15 min</option>
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60">60 min</option>
+                  <option value="90">90 min</option>
+                  <option value="120">120 min</option>
+                  <option value="150">150 min</option>
+                  <option value="180">180 min</option>
+                </select>
+                <span class="error-message" id="cookTimeError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="difficulty">Difficulty *</label>
+                <select id="difficulty" name="difficulty" required>
+                  <option value="">Select difficulty</option>
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+                <span class="error-message" id="difficultyError"></span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="imageUrl">Image URL (optional)</label>
+              <input
+                type="url"
+                id="imageUrl"
+                name="imageUrl"
+                placeholder="https://example.com/image.jpg"
+              />
+              <span class="error-message" id="imageUrlError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="ingredients">Ingredients *</label>
+              <div id="ingredientsContainer">
+                <div class="ingredient-item">
+                  <input
+                    type="text"
+                    class="ingredient-input"
+                    placeholder="e.g., 2 cups flour"
+                  />
+                  <button
+                    type="button"
+                    class="btn-remove"
+                    onclick="removeIngredient(this)"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="btn-add" onclick="addIngredient()">
+                + Add Ingredient
+              </button>
+              <span class="error-message" id="ingredientsError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="steps">Instructions *</label>
+              <div id="stepsContainer">
+                <div class="step-item">
+                  <textarea
+                    class="step-input"
+                    rows="2"
+                    placeholder="Enter step instruction"
+                  ></textarea>
+                  <button
+                    type="button"
+                    class="btn-remove"
+                    onclick="removeStep(this)"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="btn-add" onclick="addStep()">
+                + Add Step
+              </button>
+              <span class="error-message" id="stepsError"></span>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Save Recipe</button>
+              <a
+                href="#"
+                onclick="showHomePage(); return false;"
+                class="btn-secondary"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- DETAIL PAGE -->
+      <div id="detailPage" class="page">
+        <div id="recipeDetail" class="recipe-detail"></div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Recipe Manager. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="recipes-data.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -31,7 +31,7 @@ body {
 
 .container {
   max-width: 1300px;
-  margin: 50px auto;
+  margin: 20px auto;
   padding: 0 20px;
   width: 100%;
 }
@@ -39,7 +39,6 @@ body {
 /* ========== HEADER ========== */
 header {
   background: var(--header-bg);
-  height: 150px;
   color: white;
   box-shadow: 0 4px 12px rgba(11, 114, 133, 0.1);
 }
@@ -49,8 +48,6 @@ header .container {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem 10px;
 }
 
 header h1 {
@@ -227,6 +224,15 @@ main {
   position: relative;
   flex: 2;
   min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.search-box label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
 }
 
 .search-box input {
@@ -248,9 +254,16 @@ main {
 .search-icon {
   position: absolute;
   right: 1rem;
-  top: 50%;
+  /* nudge icon slightly lower for visual alignment */
+  top: 60%;
   transform: translateY(-50%);
   font-size: 1.3rem;
+}
+
+/* Stronger rule to ensure vertical alignment across media queries */
+.search-box .search-icon {
+  top: 66% !important;
+  transform: translateY(-50%) !important;
 }
 
 .filter-group {
@@ -656,8 +669,6 @@ footer {
   background-color: #6c6c6c;
   color: white;
   text-align: center;
-  padding: 1.5rem 0;
-  margin-top: auto;
 }
 
 /* ========== RESPONSIVE ========== */
@@ -722,8 +733,8 @@ footer {
     text-align: center;
     gap: 1rem;
   }
-  
-.recipe-image {
+
+  .recipe-image {
     width: 100%;
   }
 

@@ -28,10 +28,9 @@ It supports creating, viewing, editing, searching, and deleting recipes directly
 ## 🗄️ Data & Local Storage
 
 - On first load, the app inserts **the candidate’s recipe** into `localStorage`.
-- Optional: Additional 3–5 sample recipes may be inserted.
 - All recipes are stored under the key:
 
-
+---
 ## 🛠️ CRUD Operations
 
 ### ✔️ Create  
@@ -53,16 +52,15 @@ Recipe can be removed and the UI refreshes.
 - Search by **recipe title**
 - Filter by **difficulty level**:  
   `All | Easy | Medium | Hard`
-- *(Optional)* Filter by **maximum preparation time**
+ Filter by **maximum preparation time**
 
 ---
 
 ## 📱 Responsiveness
 
 - Fully responsive layout  
-- Works on **desktop**, **tablet**, and **mobile**  
-- CSS frameworks may be used (optional)
-
+- Works on **desktop**, **tablet**, and **mobile**
+- 
 ---
 
 ## ⚠️ Error Handling & Validation
@@ -71,16 +69,8 @@ Recipe can be removed and the UI refreshes.
 - Shows clear error messages  
 - Handles corrupted or missing `localStorage` data gracefully  
 - Fallback default dataset if needed
-
----
-
-## ▶️ How to Run the App
-
-1. **Download or clone** the source code.  
-2. Open `index.html` in any modern browser (Chrome, Firefox, Edge).  
-3. No server is required—everything runs fully on the client.
-
----
+- 
+--- 
 
 ## 📝 Assumptions & Limitations
 
@@ -99,3 +89,8 @@ Recipe can be removed and the UI refreshes.
 
 ---
 
+## ▶️ How to Run the App
+
+1. **Download or clone** the source code.  
+2. Open `index.html` in any modern browser (Chrome, Firefox, Edge).  
+3. No server is required—everything runs fully on the client.

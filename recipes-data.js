@@ -31,6 +31,7 @@ const DEFAULT_RECIPES = [
     prepTime: 20,
     cookTime: 25,
     difficulty: 'medium',
+    type: 'veg',
     imageUrl:
       'https://c.ndtvimg.com/2020-01/nqphvs18_kathi-roll_625x300_17_January_20.jpg',
   },
@@ -72,6 +73,7 @@ const DEFAULT_RECIPES = [
     prepTime: 10,
     cookTime: 15,
     difficulty: 'easy',
+    type: 'non-veg',
     imageUrl:
       'https://images.raasakarts.com/insecure/fit/1000/1000/ce/0/plain/https://rasakart-assets.s3.ap-south-1.amazonaws.com/3fa229/prods/obfu9Dkd2PV8A1GnRuXWYIDKX6B3EpSHSmltActZ.jpg@webp',
   },
@@ -105,6 +107,7 @@ const DEFAULT_RECIPES = [
     prepTime: 10,
     cookTime: 20,
     difficulty: 'medium',
+    type: 'non-veg',
     imageUrl:
       'https://www.gogogogourmet.com/wp-content/uploads/2015/06/Carbonara-1024x669.jpg',
   },
@@ -141,6 +144,7 @@ const DEFAULT_RECIPES = [
     prepTime: 40,
     cookTime: 35,
     difficulty: 'medium',
+    type: 'non-veg',
     imageUrl:
       'https://ministryofcurry.com/wp-content/uploads/2025/04/chicken-tikka-masala_-5.jpg',
   },
@@ -175,6 +179,7 @@ const DEFAULT_RECIPES = [
     prepTime: 15,
     cookTime: 11,
     difficulty: 'easy',
+    type: 'veg',
     imageUrl:
       'https://www.allrecipes.com/thmb/dNzzgeEyacuH-RIfMI4PjWFODBM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-9996-chewy-peanut-butter-chocolate-chip-cookies-ddmfs-4x3-614164ea044a4845b3cca7e725ecf7bd.jpg',
   },

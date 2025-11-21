@@ -100,6 +100,11 @@ const Recipes = {
     if (!maxTime) return recipes;
     return recipes.filter((r) => r.prepTime + r.cookTime <= maxTime);
   },
+
+  filterByType(recipes, type) {
+    if (!type || type === 'all') return recipes;
+    return recipes.filter((r) => r.type === type);
+  },
 };
 
 // ========== UTILITIES ==========
@@ -118,6 +123,15 @@ function getDifficultyBadge(difficulty) {
   };
   const d = map[difficulty] || map.medium;
   return `<span class="difficulty-badge ${d.class}">${d.text}</span>`;
+}
+
+function getTypeBadge(type) {
+  const map = {
+    veg: { text: 'Veg', class: 'type-veg' },
+    'non-veg': { text: 'Non-Veg', class: 'type-non-veg' },
+  };
+  const t = map[type] || map.veg;
+  return `<span class="type-badge ${t.class}">${t.text}</span>`;
 }
 
 function isValidUrl(url) {
@@ -160,14 +174,36 @@ function createRecipeCard(recipe) {
   const time = recipe.prepTime + recipe.cookTime;
   const badge = getDifficultyBadge(recipe.difficulty);
 
+  let svgContent;
+  if (recipe.type === 'veg') {
+    svgContent = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="2" width="20" height="20" fill="none" stroke="#00A651" stroke-width="2"/>
+  <circle cx="12" cy="12" r="6" fill="#00A651"/>
+</svg>
+`;
+  } else if (recipe.type === 'non-veg') {
+    svgContent = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="2" width="20" height="20" fill="none" stroke="#FF0000" stroke-width="2"/>
+  <circle cx="12" cy="12" r="6" fill="#FF0000"/>
+</svg>
+`;
+  } else {
+    svgContent = '';
+  }
+
+  const icon = svgContent
+    ? `<div class="recipe-card-icon">${svgContent}</div>`
+    : '';
+
   let img = '';
   if (recipe.imageUrl && recipe.imageUrl.trim()) {
-    img = `<img src="${escapeHtml(recipe.imageUrl)}" 
+    img = `<img src="${escapeHtml(recipe.imageUrl)}"
            alt="${escapeHtml(recipe.title)}" class="recipe-card-image">`;
   }
 
   return `
     <div class="recipe-card" onclick="showRecipeDetail(${recipe.id})">
+      ${icon}
       ${img}
       <div class="recipe-card-content">
         <h3 class="recipe-card-title">${escapeHtml(recipe.title)}</h3>
@@ -188,10 +224,12 @@ function displayRecipes() {
   const maxTime = parseInt(
     document.getElementById('prepTimeFilter')?.value || 0
   );
+  const type = window.currentTypeFilter || 'all';
 
   let filtered = Recipes.search(search);
   filtered = Recipes.filterByDifficulty(filtered, difficulty);
   filtered = Recipes.filterByTime(filtered, maxTime);
+  filtered = Recipes.filterByType(filtered, type);
 
   const grid = document.getElementById('recipesGrid');
   const count = document.getElementById('recipeCount');
@@ -228,6 +266,8 @@ function loadRecipeForEdit(id) {
   document.getElementById('prepTime').value = recipe.prepTime || 0;
   document.getElementById('cookTime').value = recipe.cookTime || 0;
   document.getElementById('difficulty').value = recipe.difficulty || '';
+  if (document.getElementById('type'))
+    document.getElementById('type').value = recipe.type || '';
   document.getElementById('imageUrl').value = recipe.imageUrl || '';
 
   const ingContainer = document.getElementById('ingredientsContainer');
@@ -304,6 +344,9 @@ function getFormData() {
     prepTime: parseInt(document.getElementById('prepTime').value) || 0,
     cookTime: parseInt(document.getElementById('cookTime').value) || 0,
     difficulty: document.getElementById('difficulty').value,
+    type: document.getElementById('type')
+      ? document.getElementById('type').value
+      : '',
     imageUrl: document.getElementById('imageUrl').value.trim(),
     ingredients,
     steps,
@@ -331,6 +374,11 @@ function validateForm() {
     showFieldError('difficulty', 'Select difficulty');
     valid = false;
   } else clearFieldError('difficulty');
+
+  if (!data.type || !['veg', 'non-veg'].includes(data.type)) {
+    showFieldError('type', 'Select type');
+    valid = false;
+  } else clearFieldError('type');
 
   if (data.imageUrl && !isValidUrl(data.imageUrl)) {
     showFieldError('imageUrl', 'Invalid URL');
@@ -382,6 +430,12 @@ function showHomePage() {
   document.getElementById('addEditPage').style.display = 'none';
   document.getElementById('detailPage').style.display = 'none';
   displayRecipes();
+
+  // Remove back-to-top button when leaving detail page
+  const backToTopBtn = document.querySelector('.back-to-top');
+  if (backToTopBtn) {
+    backToTopBtn.remove();
+  }
 }
 
 function showAddEditPage(id = null) {
@@ -400,6 +454,11 @@ function showAddEditPage(id = null) {
   addIngredient();
   addStep();
 
+  // default to veg for new recipe form
+  if (!id && document.getElementById('type')) {
+    document.getElementById('type').value = 'veg';
+  }
+
   if (id) loadRecipeForEdit(id);
 }
 
@@ -417,6 +476,7 @@ function showRecipeDetail(id) {
 
   const detail = document.getElementById('recipeDetail');
   const badge = getDifficultyBadge(recipe.difficulty);
+  const typeBadge = getTypeBadge(recipe.type);
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   let img = '';
@@ -426,16 +486,19 @@ function showRecipeDetail(id) {
            onerror="this.style.display='none'">`;
   }
 
+  const editSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+  const deleteSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+
   detail.innerHTML = `
     <div class="recipe-detail-header">
       <a href="#" onclick="showHomePage(); return false;" class="back-link">← Back to Recipes</a>
       <div class="recipe-actions">
         <a href="#" onclick="showAddEditPage(${
           recipe.id
-        }); return false;" class="btn-icon-edit" title="Edit">✏️</a>
+        }); return false;" class="btn-icon-edit" title="Edit">${editSvg}</a>
         <button onclick="deleteRecipe(${
           recipe.id
-        })" class="btn-icon-delete" title="Delete">🗑️</button>
+        })" class="btn-icon-delete" title="Delete">${deleteSvg}</button>
       </div>
     </div>
 
@@ -460,6 +523,10 @@ function showRecipeDetail(id) {
           <div class="meta-item">
             <span class="meta-label">Difficulty:</span>
             <span class="meta-value">${badge}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Type:</span>
+            <span class="meta-value">${typeBadge}</span>
           </div>
         </div>
       </div>
@@ -490,6 +557,13 @@ function showRecipeDetail(id) {
       </ol>
     </div>
   `;
+
+  // Add back-to-top button
+  const backToTopBtn = document.createElement('button');
+  backToTopBtn.className = 'back-to-top';
+  backToTopBtn.innerHTML = '↑';
+  backToTopBtn.onclick = scrollToTop;
+  document.body.appendChild(backToTopBtn);
 }
 
 function deleteRecipe(id) {
@@ -499,9 +573,55 @@ function deleteRecipe(id) {
   }
 }
 
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterByType(type) {
+  window.currentTypeFilter = type;
+  updateTypeFilterToggle(type);
+  displayRecipes();
+}
+
+function handleTypeToggle() {
+  const toggle = document.getElementById('typeToggle');
+  if (toggle.checked) {
+    filterByType('non-veg');
+  } else {
+    filterByType('veg');
+  }
+}
+
+function updateTypeFilterToggle(type) {
+  const toggle = document.getElementById('typeToggle');
+  const slider = document.querySelector('.toggle-slider');
+  const clearBtn = document.getElementById('clearTypeFilterBtn');
+
+  if (type === 'all') {
+    toggle.checked = false;
+    if (slider) slider.classList.remove('active-red', 'active-green');
+    if (clearBtn) clearBtn.classList.remove('active');
+  } else if (type === 'non-veg') {
+    toggle.checked = true;
+    if (slider) {
+      slider.classList.remove('active-green');
+      slider.classList.add('active-red');
+    }
+    if (clearBtn) clearBtn.classList.add('active');
+  } else if (type === 'veg') {
+    toggle.checked = false;
+    if (slider) {
+      slider.classList.remove('active-red');
+      slider.classList.add('active-green');
+    }
+    if (clearBtn) clearBtn.classList.add('active');
+  }
+}
+
 // ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', function () {
   Recipes.init();
+  window.currentTypeFilter = 'all';
 
   const searchInput = document.getElementById('searchInput');
   const diffFilter = document.getElementById('difficultyFilter');
@@ -514,6 +634,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const form = document.getElementById('recipeForm');
   if (form) form.addEventListener('submit', handleFormSubmit);
+
+  // Show/hide back-to-top button on scroll
+  window.addEventListener('scroll', function () {
+    const backToTopBtn = document.querySelector('.back-to-top');
+    if (backToTopBtn) {
+      if (window.scrollY > 200) {
+        backToTopBtn.style.display = 'block';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    }
+  });
 
   showHomePage();
 });
